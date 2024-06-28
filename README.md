@@ -1,4 +1,4 @@
-# Ekalvia 🏹
+# Ekalvia AI 🏹
 
 Your personal AI tutor. Learn about anything, anytime, anywhere on the web - using your favorite AI chatbot.
 Overview

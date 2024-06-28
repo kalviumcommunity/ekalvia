@@ -75,7 +75,7 @@ function createContextMenu() {
   const contexts = ["selection"];
 
   let parentId = chrome.contextMenus.create({
-    title: "Ekalavya",
+    title: "Ekalvia AI",
     id: "top",
     contexts
   })
