@@ -22,6 +22,10 @@ function handleIncomingRequest(sentMesssage) {
 
 
 async function openWithAI(prompt) {
+  // Dispatch event for analytics
+  const event = new CustomEvent("ekalvia-prompt-accessed");
+  window.dispatchEvent(event);
+
   let data = await chrome.storage.local.get("provider");
   console.log(data);
   switch (data.provider) {
