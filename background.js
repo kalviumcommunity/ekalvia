@@ -22,6 +22,14 @@ function handleIncomingRequest(sentMesssage) {
 
 
 async function openWithAI(prompt) {
+  // Dispatch event for analytics
+  sendMessageToWebsite({
+      type: "ekalvia-prompt-accessed",
+      payload: {
+        prompt,
+      },
+  });
+
   let data = await chrome.storage.local.get("provider");
   console.log(data);
   switch (data.provider) {
@@ -147,6 +155,15 @@ async function triggerPromptHandler() {
   let tab = await createTab(aidata[storedProvider].website);
   await timeout(2000);
   chrome.tabs.sendMessage(tab.id,{type:"registerprompt", ...aidata[storedProvider]})
+}
+
+// Function to send a message to the website
+function sendMessageToWebsite(message) {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs.length > 0) {
+            chrome.tabs.sendMessage(tabs[0].id, message);
+        }
+    });
 }
 
 // Enable bing AI on chrome

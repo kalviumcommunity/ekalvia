@@ -8,9 +8,9 @@ let handler = document.addEventListener("click", e => {
   const origin = e.target.closest(`a`);
   if (origin && origin.href && origin.href.startsWith("prompt://")) {
     e.preventDefault();
-    console.log("Should open prompt for " + origin.href.slice(9));
-    browser.runtime.sendMessage({prompt: origin.href.slice(9), type: "open"}, function(e) {
-      console.log("Received ", e);
+    console.log("Should open prompt for " + decodeURIComponent(origin.href.slice(9)));
+    browser.runtime.sendMessage({prompt: decodeURIComponent(origin.href.slice(9)), type: "open"}, function(e) {
+            console.log("Received ", e);
     })
   }
 });
