@@ -68,8 +68,22 @@ function createTab (url) {
 // Context menus
 chrome.runtime.onInstalled.addListener(() => {
   createContextMenu();
-  chrome.contextMenus.onClicked.addListener(handleSelection);
 });
+
+// Assume bug as well:
+//https://stackoverflow.com/questions/33834785/chrome-extension-context-menu-not-working-after-update
+
+setTimeout(function() {
+    // This .update() call does not change the context menu if it exists,
+    // but sets chrome.runtime.lastError if the menu does not exist.
+    chrome.contextMenus.update("top", {}, function() {
+      if (chrome.runtime.lastError) {
+          // Assume that crbug.com/388231 occured, manually call
+          createContextMenu();
+      }
+  });
+}, 222); // <-- Some short timeout.
+
 
 function createContextMenu() {
   const contexts = ["selection"];
@@ -98,9 +112,11 @@ function createContextMenu() {
     contexts,
     parentId,
   });
+  chrome.contextMenus.onClicked.addListener(handleSelection);
 }
 
 function handleSelection(info, tab) {
+  console.log("incoming " + info.selectionText);
   let selectedText = info.selectionText;
   let pageTitle = tab.title;
   let pageURL = tab.url;
