@@ -23,7 +23,7 @@ function handleIncomingRequest(sentMesssage) {
 
 async function openWithAI(prompt) {
   // Dispatch event for analytics
-  sendMessageToReactApp({
+  sendMessageToWebsite({
       type: "ekalvia-prompt-accessed",
       payload: {
         prompt,
@@ -142,7 +142,7 @@ async function triggerPromptHandler() {
 }
 
 // Function to send a message to the website
-function sendMessageToReactApp(message) {
+function sendMessageToWebsite(message) {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs.length > 0) {
             chrome.tabs.sendMessage(tabs[0].id, message);
