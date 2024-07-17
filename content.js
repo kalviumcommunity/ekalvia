@@ -123,4 +123,12 @@ async function injectTextToEditor(text) {
   }
 }
 
+document.addEventListener('selectionchange', function() {
+  var selection = window.getSelection().toString().trim();
+  browser.runtime.sendMessage({
+      type: 'updateContextMenu',
+      selection: selection.substring(0,10) + (selection.length > 10 ? "...": "")
+  });
+});
+
 console.log("content script loaded")

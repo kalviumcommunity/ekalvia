@@ -6,20 +6,12 @@ if (typeof browser === "undefined") {
 browser.runtime.onMessage.addListener(handleIncomingRequest);
 
 function handleIncomingRequest(sentMesssage) { 
-    //console.log('got the message for prompt: ', sentMesssage);
     if (sentMesssage.type == "open") openWithAI(sentMesssage.prompt);
-    // else if (sentMesssage.type == "fwdregisterprompt") {
-    //   console.log(sentMesssage)
-    //   triggerWebPromptHandler(sentMesssage.provider)
-    // }
+    if (sentMesssage.type == "updateContextMenu") {
+      createContextMenu(sentMesssage.selection)
+    }
     return true;
 }
-
-// async function triggerWebPromptHandler(storedProvider) {
-//   let tab = await createTab(aidata[storedProvider].website);
-//   chrome.tabs.sendMessage(tab.id,{type:"registerprompt", ...aidata[storedProvider]})
-// }
-
 
 async function openWithAI(prompt) {
   // Dispatch event for analytics
@@ -74,7 +66,7 @@ function createTab (url) {
 
 
 // Context menus
-chrome.runtime.onInstalled.addListener(() => {
+browser.runtime.onInstalled.addListener(() => {
   createContextMenu();
 });
 
@@ -84,8 +76,8 @@ chrome.runtime.onInstalled.addListener(() => {
 setTimeout(function() {
     // This .update() call does not change the context menu if it exists,
     // but sets chrome.runtime.lastError if the menu does not exist.
-    chrome.contextMenus.update("top", {}, function() {
-      if (chrome.runtime.lastError) {
+    browser.contextMenus.update("top", {}, function() {
+      if (browser.runtime.lastError) {
           // Assume that crbug.com/388231 occured, manually call
           createContextMenu();
       }
@@ -93,34 +85,36 @@ setTimeout(function() {
 }, 222); // <-- Some short timeout.
 
 
-function createContextMenu() {
+function createContextMenu(text) {
   const contexts = ["selection"];
+  browser.contextMenus.removeAll();
+  console.log("Updating with ", text)
 
-  let parentId = chrome.contextMenus.create({
+  let parentId = browser.contextMenus.create({
     title: "Ekalvia AI",
     id: "top",
     contexts
   })
 
-  chrome.contextMenus.create({
-    title: "Learn this with AI",
+  browser.contextMenus.create({
+    title: `Learn '${text}' with AI`,
     id: "learn",
     contexts,
     parentId,
   });
-  chrome.contextMenus.create({
-    title: "Explain more with AI",
+  browser.contextMenus.create({
+    title: `Explain '${text}' with AI`,
     id: "explain",
     contexts,
     parentId,
   });
-  chrome.contextMenus.create({
-    title: "Quiz with AI",
+  browser.contextMenus.create({
+    title: `Quiz '${text}' with AI`,
     id: "quiz",
     contexts,
     parentId,
   });
-  chrome.contextMenus.onClicked.addListener(handleSelection);
+  browser.contextMenus.onClicked.addListener(handleSelection);
 }
 
 function handleSelection(info, tab) {
@@ -202,4 +196,3 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
 // All set.
 
 console.log("Background listener started")
-
