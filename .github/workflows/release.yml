@@ -1,0 +1,56 @@
+env:
+  DIRECTORY: .
+  PROJECT_NAME: ekalvia
+
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+        version:
+          description: 'Version of extension'
+          required: true
+          type: string
+
+jobs:
+  Version:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+
+      - name: Update manifest.json with version ${{ github.event.inputs.version }}
+        run: npx dot-json@1 "manifest.json" version "${{ github.event.inputs.version }}"
+
+      - name: Ready for "submit" jobs
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ env.DIRECTORY }}
+
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: ${{ env.DIRECTORY }}
+        run: |
+          FILENAME="$PROJECT_NAME-${{ github.event.inputs.version }}.zip"
+          zip -r "$FILENAME" ./*
+          gh release create "${{ github.event.inputs.version }}" --generate-notes "$FILENAME"
+
+  Chrome:
+    needs: Version
+    name: Submit (Chrome)
+    environment: Chrome
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: artifact
+          path: artifact
+      - run: npx chrome-webstore-upload-cli@3
+        working-directory: artifact
+        env:
+          EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
