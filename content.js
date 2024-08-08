@@ -1,238 +1,238 @@
-if (typeof browser === "undefined") {
-  var browser = chrome;
+if (typeof browser === 'undefined') {
+    var browser = chrome
 }
 
-browser.runtime.onMessage.addListener(loadPrompt);
+browser.runtime.onMessage.addListener(loadPrompt)
 
-let handler = document.addEventListener("click", (e) => {
-  const origin = e.target.closest(`a`);
-  if (origin && origin.href && origin.href.startsWith("prompt://")) {
-    e.preventDefault();
-    console.log(
-      "Should open prompt for " + decodeURIComponent(origin.href.slice(9))
-    );
-    browser.runtime.sendMessage(
-      { prompt: decodeURIComponent(origin.href.slice(9)), type: "open" },
-      function (e) {
-        console.log("Received ", e);
-      }
-    );
-  }
-});
+let handler = document.addEventListener('click', e => {
+    const origin = e.target.closest(`a`)
+    if (origin && origin.href && origin.href.startsWith('prompt://')) {
+        e.preventDefault()
+        console.log(
+            'Should open prompt for ' + decodeURIComponent(origin.href.slice(9))
+        )
+        browser.runtime.sendMessage(
+            { prompt: decodeURIComponent(origin.href.slice(9)), type: 'open' },
+            function (e) {
+                console.log('Received ', e)
+            }
+        )
+    }
+})
 
-function makeToast(text, toastcolor = "#f0f4f9") {
-  const smileyDiv = document.createElement("div");
-  smileyDiv.style.position = "absolute";
-  smileyDiv.style.top = "10px"; // Set top to 0 for top of the screen
-  smileyDiv.style.left = "50%";
-  smileyDiv.style.transform = "translate(-50%, 0)"; // Adjust for horizontal centering
-  smileyDiv.style.backgroundColor = toastcolor;
-  smileyDiv.style.borderRadius = "15px";
-  smileyDiv.style.padding = "10px";
-  smileyDiv.style.zIndex = 9999;
-  smileyDiv.style["font-family"] = "sans-serif";
-  // Add smiley text
-  smileyDiv.textContent = text;
-  document.body.appendChild(smileyDiv);
-  return smileyDiv;
+function makeToast(text, toastcolor = '#f0f4f9') {
+    const smileyDiv = document.createElement('div')
+    smileyDiv.style.position = 'absolute'
+    smileyDiv.style.top = '10px' // Set top to 0 for top of the screen
+    smileyDiv.style.left = '50%'
+    smileyDiv.style.transform = 'translate(-50%, 0)' // Adjust for horizontal centering
+    smileyDiv.style.backgroundColor = toastcolor
+    smileyDiv.style.borderRadius = '15px'
+    smileyDiv.style.padding = '10px'
+    smileyDiv.style.zIndex = 9999
+    smileyDiv.style['font-family'] = 'sans-serif'
+    // Add smiley text
+    smileyDiv.textContent = text
+    document.body.appendChild(smileyDiv)
+    return smileyDiv
 }
 
-window.makeToast = makeToast;
+window.makeToast = makeToast
 
 function timeout(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-async function setLogoText(text = "Learn ++") {
-  //gemini
-  if (window.location.hostname == "gemini.google.com") {
-    let logoTextEl = document.querySelector(".logoText");
-    if (!logoTextEl) {
-      document.querySelector(".logo").innerHTML +=
-        '<span class="logoText"></span>';
-      logoTextEl = document.querySelector(".logoText");
-    }
-    logoTextEl.innerHTML = text;
-    return;
-  } else if (window.location.hostname == "chatgpt.com") {
-    //chatgpt
-    await timeout(5000);
-    let logoTextEl = document.querySelector(".logoText");
-    if (!logoTextEl) {
-      document.querySelector(
-        "span.text-token-text-secondary"
-      ).parentElement.innerHTML += '<span class="logoText"></span>';
-      logoTextEl = document.querySelector(".logoText");
-    }
-    logoTextEl.innerHTML = text;
-  } else if (window.location.hostname === "claude.ai") {
-    //claude
-    await timeout(5000);
-    const claudeLogo = document.querySelector("a[href='/new']");
-    if (!claudeLogo.querySelector(".logoText")) {
-      const logoTextEl = document.createElement("span");
-      logoTextEl.className = "logoText";
-      logoTextEl.style.cssText = "display: block; padding-top: 10px;";
-      claudeLogo.innerHTML += logoTextEl.outerHTML;
-      claudeLogo.style.cssText =
-        "display: flex; flex-direction: column; gap: 1rem; align-items: flex-start;";
-      // To make sure chatname does not overlap with logotext
-      document.querySelectorAll("div").forEach((div) => {
-        if (div.querySelector("a[href='/new']")) {
-          div.style.paddingTop = "0.8rem";
+async function setLogoText(text = 'Learn ++') {
+    //gemini
+    if (window.location.hostname == 'gemini.google.com') {
+        let logoTextEl = document.querySelector('.logoText')
+        if (!logoTextEl) {
+            document.querySelector('.logo').innerHTML +=
+                '<span class="logoText"></span>'
+            logoTextEl = document.querySelector('.logoText')
         }
-      });
+        logoTextEl.innerHTML = text
+        return
+    } else if (window.location.hostname == 'chatgpt.com') {
+        //chatgpt
+        await timeout(5000)
+        let logoTextEl = document.querySelector('.logoText')
+        if (!logoTextEl) {
+            document.querySelector(
+                'span.text-token-text-secondary'
+            ).parentElement.innerHTML += '<span class="logoText"></span>'
+            logoTextEl = document.querySelector('.logoText')
+        }
+        logoTextEl.innerHTML = text
+    } else if (window.location.hostname === 'claude.ai') {
+        //claude
+        await timeout(5000)
+        const claudeLogo = document.querySelector("a[href='/new']")
+        if (!claudeLogo.querySelector('.logoText')) {
+            const logoTextEl = document.createElement('span')
+            logoTextEl.className = 'logoText'
+            logoTextEl.style.cssText = 'display: block; padding-top: 10px;'
+            claudeLogo.innerHTML += logoTextEl.outerHTML
+            claudeLogo.style.cssText =
+                'display: flex; flex-direction: column; gap: 1rem; align-items: flex-start;'
+            // To make sure chatname does not overlap with logotext
+            document.querySelectorAll('div').forEach(div => {
+                if (div.querySelector("a[href='/new']")) {
+                    div.style.paddingTop = '0.8rem'
+                }
+            })
+        }
+        claudeLogo.querySelector('.logoText').innerHTML = text
     }
-    claudeLogo.querySelector(".logoText").innerHTML = text;
-  }
 }
 
 async function loadPrompt(message) {
-  console.log(message);
-  await timeout(1000);
-  if (message.type == "injectprompt") {
-    let icon = makeToast("Injecting..");
-    let inject = injectTextToEditor(message.prompt);
-    if (!inject) {
-      console.log(
-        "unsupported site, or injecting prompt is broken. report an issue!"
-      );
-      return false;
+    console.log(message)
+    await timeout(1000)
+    if (message.type == 'injectprompt') {
+        let icon = makeToast('Injecting..')
+        let inject = injectTextToEditor(message.prompt)
+        if (!inject) {
+            console.log(
+                'unsupported site, or injecting prompt is broken. report an issue!'
+            )
+            return false
+        }
+        await timeout(500)
+        setLogoText(' 🏹 Learn with Ekalviya')
+        icon.remove()
+        return true
     }
-    await timeout(500);
-    setLogoText(" 🏹 Learn with Ekalviya");
-    icon.remove();
-    return true;
-  }
 }
 
 async function injectTextToEditor(text) {
-  if (window.location.hostname == "gemini.google.com") {
-    const editorElement = document.getElementsByClassName("ql-editor")[0];
-    let htmltext = text
-      .split("\n")
-      .map((t) => `<p>${t}</p>`)
-      .join("");
-    // Check if element exists before proceeding
-    if (!editorElement) {
-      let t = makeToast(
-        "! Error in prompting automation. Try it again, or report an issue !",
-        "#ffcccc"
-      );
-      await timeout(3000);
-      t.remove();
-      return false;
-    }
-    // Inject the text into the editor
-    let fill = text;
-    editorElement.innerHTML = fill;
-    await timeout(100);
-    document.getElementsByClassName("send-button")[0].click();
-    await timeout(1000);
-    return true;
-  } else if (window.location.hostname == "chatgpt.com") {
-    await 1000;
-    const textElement = document.getElementById("prompt-textarea");
-    await timeout(1000);
-    if (textElement) {
-      try {
-        textElement.focus();
-        document.execCommand("insertText", false, text);
-        await 200;
-        const button = document.querySelector(
-          'button[data-testid="send-button"]'
-        );
-        if (button) {
-          button.click();
-          return;
-        } else {
-          const enterKeyEvent = new KeyboardEvent("keydown", {
-            key: "Enter",
-            code: "Enter",
-            keyCode: 13,
-            which: 13,
-            bubbles: true,
-            cancelable: true,
-          });
-          document.dispatchEvent(enterKeyEvent);
+    if (window.location.hostname == 'gemini.google.com') {
+        const editorElement = document.getElementsByClassName('ql-editor')[0]
+        let htmltext = text
+            .split('\n')
+            .map(t => `<p>${t}</p>`)
+            .join('')
+        // Check if element exists before proceeding
+        if (!editorElement) {
+            let t = makeToast(
+                '! Error in prompting automation. Try it again, or report an issue !',
+                '#ffcccc'
+            )
+            await timeout(3000)
+            t.remove()
+            return false
         }
-        // textElement.parentElement.parentElement.querySelector("button").click();
-      } catch {
-        let t = makeToast(
-          "! Error in prompting automation. Try it again, or report an issue!",
-          "#ffcccc"
-        );
-        await timeout(3000);
-        t.remove();
-        return false;
-      }
-      return true;
-    }
-    let t = makeToast(
-      "! Error in prompting automation. Try it again, or report an issue!",
-      "#ffcccc"
-    );
-    await timeout(3000);
-    t.remove();
-    return false;
-  } else if (window.location.hostname == "claude.ai") {
-    await 1000;
-    const editorElement = document.querySelector(".ProseMirror");
-    if (editorElement) {
-      try {
-        editorElement.focus();
-        editorElement.innerHTML = "";
-        editorElement.innerHTML = text
-          .split("\n")
-          .map((line) => `<p>${line}</p>`)
-          .join("");
-        await timeout(200);
-        const button = document.querySelector(
-          'button[aria-label="Send Message"]'
-        );
-        if (button) {
-          button.click();
-          return;
-        } else {
-          const enterKeyEvent = new KeyboardEvent("keydown", {
-            key: "Enter",
-            code: "Enter",
-            keyCode: 13,
-            which: 13,
-            bubbles: true,
-            cancelable: true,
-          });
-          document.dispatchEvent(enterKeyEvent);
+        // Inject the text into the editor
+        let fill = text
+        editorElement.innerHTML = fill
+        await timeout(100)
+        document.getElementsByClassName('send-button')[0].click()
+        await timeout(1000)
+        return true
+    } else if (window.location.hostname == 'chatgpt.com') {
+        await 1000
+        const textElement = document.getElementById('prompt-textarea')
+        await timeout(1000)
+        if (textElement) {
+            try {
+                textElement.focus()
+                document.execCommand('insertText', false, text)
+                await 200
+                const button = document.querySelector(
+                    'button[data-testid="send-button"]'
+                )
+                if (button) {
+                    button.click()
+                    return
+                } else {
+                    const enterKeyEvent = new KeyboardEvent('keydown', {
+                        key: 'Enter',
+                        code: 'Enter',
+                        keyCode: 13,
+                        which: 13,
+                        bubbles: true,
+                        cancelable: true,
+                    })
+                    document.dispatchEvent(enterKeyEvent)
+                }
+                // textElement.parentElement.parentElement.querySelector("button").click();
+            } catch {
+                let t = makeToast(
+                    '! Error in prompting automation. Try it again, or report an issue!',
+                    '#ffcccc'
+                )
+                await timeout(3000)
+                t.remove()
+                return false
+            }
+            return true
         }
-      } catch {
         let t = makeToast(
-          "! Error in prompting automation. Try it again, or report an issue!",
-          "#ffcccc"
-        );
-        await timeout(3000);
-        t.remove();
-        return false;
-      }
+            '! Error in prompting automation. Try it again, or report an issue!',
+            '#ffcccc'
+        )
+        await timeout(3000)
+        t.remove()
+        return false
+    } else if (window.location.hostname == 'claude.ai') {
+        await 1000
+        const editorElement = document.querySelector('.ProseMirror')
+        if (editorElement) {
+            try {
+                editorElement.focus()
+                editorElement.innerHTML = ''
+                editorElement.innerHTML = text
+                    .split('\n')
+                    .map(line => `<p>${line}</p>`)
+                    .join('')
+                await timeout(200)
+                const button = document.querySelector(
+                    'button[aria-label="Send Message"]'
+                )
+                if (button) {
+                    button.click()
+                    return
+                } else {
+                    const enterKeyEvent = new KeyboardEvent('keydown', {
+                        key: 'Enter',
+                        code: 'Enter',
+                        keyCode: 13,
+                        which: 13,
+                        bubbles: true,
+                        cancelable: true,
+                    })
+                    document.dispatchEvent(enterKeyEvent)
+                }
+            } catch {
+                let t = makeToast(
+                    '! Error in prompting automation. Try it again, or report an issue!',
+                    '#ffcccc'
+                )
+                await timeout(3000)
+                t.remove()
+                return false
+            }
+        }
+        let t = makeToast(
+            '! Error in prompting automation. Try it again, or report an issue!',
+            '#ffcccc'
+        )
+        await timeout(3000)
+        t.remove()
+        return false
+    } else {
+        return false
     }
-    let t = makeToast(
-      "! Error in prompting automation. Try it again, or report an issue!",
-      "#ffcccc"
-    );
-    await timeout(3000);
-    t.remove();
-    return false;
-  } else {
-    return false;
-  }
 }
 
-document.addEventListener("selectionchange", function () {
-  var selection = window.getSelection().toString().trim();
-  browser.runtime.sendMessage({
-    type: "updateContextMenu",
-    selection:
-      selection.substring(0, 10) + (selection.length > 10 ? "..." : ""),
-  });
-});
+document.addEventListener('selectionchange', function () {
+    var selection = window.getSelection().toString().trim()
+    browser.runtime.sendMessage({
+        type: 'updateContextMenu',
+        selection:
+            selection.substring(0, 10) + (selection.length > 10 ? '...' : ''),
+    })
+})
 
-console.log("content script loaded");
+console.log('content script loaded')
