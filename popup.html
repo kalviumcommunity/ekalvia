@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <title>Prompt Handler Provider</title>
@@ -11,20 +12,24 @@ input,textarea,select,button,option,body{font:normal 400 normal 1.125rem/1.85625
   </style> -->
 
 </head>
+
 <body style="min-width:250px;">
   <h3>🏹 Ekalvia</h3>
   <p>Learning with AI </p>
-  <p>Ensure you're logged into kalvium.community account on either gemini or chatgpt, before making a selection below.</p>
+  <p>Ensure you're logged into kalvium.community account on either gemini or chatgpt or claude, before making a selection below.</p>
   <h4>Select Provider:</h4>
   <form id="providerForm">
     <input type="radio" id="gemini" name="provider" value="gemini">
     <label for="gemini">Gemini</label><br>
     <input type="radio" id="chatgpt" name="provider" value="chatgpt">
     <label for="chatgpt">ChatGPT</label><br>
+    <input type="radio" id="claude" name="provider" value="claude">
+    <label for="claude">Claude</label><br>
     <!-- <input type="radio" id="bingai" name="provider" value="bingai">
     <label for="bingai">BingAI</label><br> -->
   </form>
   <footer>Built by ⍃Kalvium community</footer>
   <script src="popup.js"></script>
 </body>
+
 </html>
