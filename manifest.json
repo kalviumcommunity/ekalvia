@@ -2,17 +2,17 @@
     "manifest_version": 3,
     "name": "Ekalvia AI",
     "version": "1.5",
-    "description": "Your personal AI tutor. Right click and learn anytime. Also integrates AI powered self-education  prompt:// links.", 
+    "description": "Your personal AI tutor. Right click and learn anytime. Also integrates AI powered self-education  prompt:// links.",
     "content_scripts": [
         {
-        "matches": ["<all_urls>"],
-        "js": ["content.js"]
+            "matches": ["<all_urls>"],
+            "js": ["content.js"]
         }
     ],
     "background": {
         "service_worker": "background.js"
     },
-    
+
     "action": {
         "default_popup": "popup.html"
     },
@@ -27,9 +27,9 @@
         "declarativeNetRequest"
     ],
     "icons": {
-        "16": "icon.png",
-        "32": "icon.png",
-        "48": "icon.png",
-        "128": "icon.png"
+        "16": "./assets/icon.png",
+        "32": "./assets/icon.png",
+        "48": "./assets/icon.png",
+        "128": "./assets/icon.png"
     }
 }
