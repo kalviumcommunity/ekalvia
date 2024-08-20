@@ -74,7 +74,6 @@ async function setLogoText(text = 'Learn ++') {
 }
 
 async function loadPrompt(message) {
-    console.log(message)
     await timeout(1000)
     if (message.type == 'injectprompt') {
         let icon = makeToast('Injecting..')

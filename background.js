@@ -37,7 +37,6 @@ async function openWithAI(prompt) {
     })
 
     let data = await chrome.storage.local.get('provider')
-    console.log(data)
     switch (data.provider) {
         case 'chatgpt':
             openChatGpt(prompt, metadata)
@@ -49,7 +48,6 @@ async function openWithAI(prompt) {
 
 async function openChatGpt(prompt, metadata) {
     let tab = await createTab('https://chatgpt.com')
-    console.log(tab)
     trackFocusChange(tab.id, Date.now(), 'chatgpt', metadata)
     chrome.tabs.sendMessage(tab.id, { type: 'injectprompt', prompt: prompt })
 }
@@ -60,7 +58,6 @@ async function openGemini(prompt) {
     //   chrome.tabs.sendMessage(tab.id,{type:"showloader", prompt: prompt})
     // })
     let tab = await createTab('https://gemini.google.com')
-    console.log(tab)
     trackFocusChange(tab.id, Date.now(), 'gemini', metadata)
     chrome.tabs.sendMessage(tab.id, { type: 'injectprompt', prompt: prompt })
 }
@@ -119,7 +116,7 @@ setTimeout(function () {
 function createContextMenu(text) {
     const contexts = ['selection']
     browser.contextMenus.removeAll()
-    console.log('Updating with ', text)
+    // console.log('Updating with ', text)
 
     let parentId = browser.contextMenus.create({
         title: 'Ekalvia AI',
