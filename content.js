@@ -5,7 +5,6 @@ if (typeof browser === 'undefined') {
 browser.runtime.onMessage.addListener(loadPrompt)
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    // Dispatch the message to the webpage
     window.postMessage(message, '*')
 })
 
@@ -13,9 +12,6 @@ let handler = document.addEventListener('click', e => {
     const origin = e.target.closest(`a`)
     if (origin && origin.href && origin.href.startsWith('prompt://')) {
         e.preventDefault()
-        console.log(
-            'Should open prompt for ' + decodeURIComponent(origin.href.slice(9))
-        )
         browser.runtime.sendMessage(
             { prompt: decodeURIComponent(origin.href.slice(9)), type: 'open' },
             function (e) {

@@ -18,12 +18,4 @@ async function loadProvider() {
     document.querySelector(
         `input[value="${storedProvider.provider}"]`
     ).checked = true
-    // const labelElement = document.querySelector(`label[for="${storedProvider.provider}"]`);
-    // const promptRegisterElement = document.createElement('a');
-    // promptRegisterElement.textContent = 'Register';
-    // promptRegisterElement.addEventListener("click", () => {
-    //   browser.runtime.sendMessage({type:"fwdregisterprompt",provider: storedProvider.provider}, function(e) {
-    //     console.log("Received ", e);
-    // })});
-    // labelElement.appendChild(promptRegisterElement)
 }

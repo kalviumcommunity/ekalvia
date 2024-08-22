@@ -53,10 +53,6 @@ async function openChatGpt(prompt, metadata) {
 }
 
 async function openGemini(prompt) {
-    // chrome.tabs.create({'url': `https://gemini.google.com`}, function(tab) {
-    //   console.log(tab);
-    //   chrome.tabs.sendMessage(tab.id,{type:"showloader", prompt: prompt})
-    // })
     let tab = await createTab('https://gemini.google.com')
     trackFocusChange(tab.id, Date.now(), 'gemini', metadata)
     chrome.tabs.sendMessage(tab.id, { type: 'injectprompt', prompt: prompt })
@@ -116,7 +112,6 @@ setTimeout(function () {
 function createContextMenu(text) {
     const contexts = ['selection']
     browser.contextMenus.removeAll()
-    // console.log('Updating with ', text)
 
     let parentId = browser.contextMenus.create({
         title: 'Ekalvia AI',
@@ -146,7 +141,6 @@ function createContextMenu(text) {
 }
 
 function handleSelection(info, tab) {
-    console.log('incoming ' + info.selectionText)
     let selectedText = info.selectionText
     let pageTitle = tab.title
     let pageURL = tab.url
@@ -167,17 +161,12 @@ function handleSelection(info, tab) {
       \n\nTopic and text:\n${selectedText}`
             break
     }
-    //console.log(prompt);
     openWithAI(prompt)
 }
 
 async function triggerPromptHandler() {
     let storedProvider = await chrome.storage.local.get('provider')
     storedProvider = storedProvider ? storedProvider.provider : 'gemini'
-    console.log(storedProvider, aidata[storedProvider], {
-        type: 'registerprompt',
-        ...aidata[storedProvider],
-    })
     await timeout(5000)
     let tab = await createTab(aidata[storedProvider].website)
     await timeout(2000)
