@@ -120,9 +120,23 @@ async function injectTextToEditor(text) {
                 textElement.focus()
                 document.execCommand('insertText', false, text)
                 await 200
-                textElement.parentElement.parentElement
-                    .querySelector('button')
-                    .click()
+                const button = document.querySelector(
+                    'button[data-testid="send-button"]'
+                )
+                if (button) {
+                    button.click()
+                    return
+                } else {
+                    const enterKeyEvent = new KeyboardEvent('keydown', {
+                        key: 'Enter',
+                        code: 'Enter',
+                        keyCode: 13,
+                        which: 13,
+                        bubbles: true,
+                        cancelable: true,
+                    })
+                    document.dispatchEvent(enterKeyEvent)
+                }
             } catch {
                 let t = makeToast(
                     '! Error in prompting automation. Try it again, or report an issue!',
