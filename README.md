@@ -14,39 +14,42 @@ More integrations coming soon!
 
 ## Features
 
-- Seamless integration with web pages
-- Support for multiple AI chatbots
-- Customizable learning prompts
-- Quiz generation for self-assessment, right click on any text selection to try this.
+-   Seamless integration with web pages
+-   Support for multiple AI chatbots
+-   Customizable learning prompts
+-   Quiz generation for self-assessment, right click on any text selection to try this.
 
 ## Installation for Developers
 
-- Clone this repository
-- Open Chrome and navigate to chrome://extensions/
-- Enable "Developer mode" in the top right corner
-- Click "Load unpacked" and select the cloned repository folder
+-   Clone this repository
+-   Open Chrome and navigate to chrome://extensions/
+-   Enable "Developer mode" in the top right corner
+-   Click "Load unpacked" and select the cloned repository folder
 
 ## Development
+
 To contribute to Ekalvia's development:
 
-- Fork this repository
-- Make your changes in a new branch
-- Test your changes locally
-- Submit a pull request
+-   Fork this repository
+-   Make your changes in a new branch
+-   Test your changes locally
+-   Submit a pull request
 
 Tip: For a smoother development experience, you can use vscode.dev to open the local folder, make changes, and reload the extension in Chrome.
 
 ## Contributing
+
 We welcome contributions! Here are some areas where you can help:
 
-- Adding support for more AI chatbots
-- Fixing bugs related to chat UI updates
-- Creating new learning prompts and quiz templates for more effective learning.
-- Enhancing documentation
+-   Adding support for more AI chatbots
+-   Fixing bugs related to chat UI updates
+-   Creating new learning prompts and quiz templates for more effective learning.
+-   Enhancing documentation
 
 ## License
 
 GPLv3: https://www.gnu.org/licenses/gpl-3.0.en.html
 
 ## Contact
+
 For questions, suggestions, or support, please open an issue on this repository.
