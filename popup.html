@@ -1,31 +1,41 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <title>Prompt Handler Provider</title>
-        <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
-        />
-    </head>
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" style="min-width:388px;">
 
-    <body style="min-width: 250px">
-        <h3>🏹 Ekalvia</h3>
-        <p>Learning with AI</p>
-        <p>
-            Ensure you're logged into kalvium.community account on either gemini
-            or chatgpt, before making a selection below.
-        </p>
-        <h4>Select Provider:</h4>
-        <form id="providerForm">
-            <input type="radio" id="gemini" name="provider" value="gemini" />
-            <label for="gemini">Gemini</label>
-            <br />
-            <input type="radio" id="chatgpt" name="provider" value="chatgpt" />
-            <label for="chatgpt">ChatGPT</label>
-            <br />
-        </form>
-        <footer>Built by ⍃Kalvium community</footer>
-        <script src="popup.js"></script>
-    </body>
+<head>
+  <meta charset="utf-8">
+  <title>Prompt Handler Provider</title>
+  <link rel="stylesheet" type="text/css" href="./styles/styles.css">
+  <!-- google fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h3 class="title"><img class="logo" src="./assets/Icon.svg"> Learn with Ekalvia</h3>
+      <svg xmlns="http://www.w3.org/2000/svg" width="324" height="2" viewBox="0 0 324 2" fill="none">
+        <path d="M0 1H324" stroke="#CCCCCC" />
+      </svg>
+    </header>
+    <p class="info-text">
+      Ensure you're logged into kalvium.community account on either Gemini or ChatGPT, before making a selection below.
+    </p>
+    <div class="service-box">
+      <div class="box-header">
+        <h4>Select a Service</h4>
+      </div>
+      <form id="providerForm">
+        <input type="radio" id="chatgpt" name="provider" value="chatgpt">
+        <label for="chatgpt">ChatGPT <img src="./assets/chatgpt-logo.svg"> </label>
+        <input type="radio" id="gemini" name="provider" value="gemini" ">
+        <label for=" gemini">Gemini <img src="./assets/gemini-logo.svg"></label>
+      </form>
+    </div>
+  </div>
+  <footer>Built with <img src="./assets/heart-icon.svg"> by <img src="./assets/kavlium-logo.svg"> Kalvium community</footer>
+  <script src="popup.js"></script>
+</body>
+
 </html>

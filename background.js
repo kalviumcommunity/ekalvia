@@ -80,14 +80,14 @@ function parseUrl(url) {
         .slice(url.split('/').indexOf('livebooks') + 1)
         .filter(part => part !== '')
 
-    metadata = {
-        course_slug: urlParts[0],
-        module_slug: urlParts[1],
-        unit_slug: urlParts[2],
-        lesson_id: urlParts[3] || 'NA',
-    }
+    const [course_slug, module_slug, unit_slug, lesson_id] = urlParts
 
-    return metadata
+    return {
+        course_slug,
+        module_slug,
+        unit_slug,
+        lesson_id: lesson_id || 'NA',
+    }
 }
 
 // Context menus
