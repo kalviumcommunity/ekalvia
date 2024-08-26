@@ -5,8 +5,22 @@ if (typeof browser === 'undefined') {
 // Handling incoming messages
 browser.runtime.onMessage.addListener(handleIncomingRequest)
 
-function handleIncomingRequest(sentMesssage) {
-    if (sentMesssage.type == 'open') openWithAI(sentMesssage.prompt)
+// kalvium tab id
+let webpageTabID = null
+
+async function handleIncomingRequest(sentMesssage) {
+    if (sentMesssage.type == 'open') {
+        // to retrieve kavlium lesson url
+        const [tab] = await chrome.tabs.query({
+            active: true,
+            lastFocusedWindow: true,
+        })
+
+        webpageTabID = tab.id
+        metadata = parseUrl(tab.url)
+
+        openWithAI(sentMesssage.prompt, metadata)
+    }
     if (sentMesssage.type == 'updateContextMenu') {
         createContextMenu(sentMesssage.selection)
     }
@@ -23,29 +37,24 @@ async function openWithAI(prompt) {
     })
 
     let data = await chrome.storage.local.get('provider')
-    console.log(data)
     switch (data.provider) {
         case 'chatgpt':
-            openChatGpt(prompt)
+            openChatGpt(prompt, metadata)
             break
         default:
-            openGemini(prompt)
+            openGemini(prompt, metadata)
     }
 }
 
-async function openChatGpt(prompt) {
+async function openChatGpt(prompt, metadata) {
     let tab = await createTab('https://chatgpt.com')
-    console.log(tab)
+    trackFocusChange(tab.id, Date.now(), 'chatgpt', metadata)
     chrome.tabs.sendMessage(tab.id, { type: 'injectprompt', prompt: prompt })
 }
 
 async function openGemini(prompt) {
-    // chrome.tabs.create({'url': `https://gemini.google.com`}, function(tab) {
-    //   console.log(tab);
-    //   chrome.tabs.sendMessage(tab.id,{type:"showloader", prompt: prompt})
-    // })
     let tab = await createTab('https://gemini.google.com')
-    console.log(tab)
+    trackFocusChange(tab.id, Date.now(), 'gemini', metadata)
     chrome.tabs.sendMessage(tab.id, { type: 'injectprompt', prompt: prompt })
 }
 
@@ -62,6 +71,23 @@ function createTab(url) {
             })
         })
     })
+}
+
+// function to extract metadata from the URL
+function parseUrl(url) {
+    const urlParts = url
+        .split('/')
+        .slice(url.split('/').indexOf('livebooks') + 1)
+        .filter(part => part !== '')
+
+    metadata = {
+        course_slug: urlParts[0],
+        module_slug: urlParts[1],
+        unit_slug: urlParts[2],
+        lesson_id: urlParts[3] || 'NA',
+    }
+
+    return metadata
 }
 
 // Context menus
@@ -86,7 +112,6 @@ setTimeout(function () {
 function createContextMenu(text) {
     const contexts = ['selection']
     browser.contextMenus.removeAll()
-    console.log('Updating with ', text)
 
     let parentId = browser.contextMenus.create({
         title: 'Ekalvia AI',
@@ -116,12 +141,13 @@ function createContextMenu(text) {
 }
 
 function handleSelection(info, tab) {
-    console.log('incoming ' + info.selectionText)
     let selectedText = info.selectionText
     let pageTitle = tab.title
     let pageURL = tab.url
 
-    let initialPrompt = `I was on the page (${pageURL})${pageTitle != pageURL ? ", with the page title '" + pageTitle + "'" : ''}`
+    let initialPrompt = `I was on the page (${pageURL})${
+        pageTitle != pageURL ? ", with the page title '" + pageTitle + "'" : ''
+    }`
     var prompt
     switch (info.menuItemId) {
         case 'learn':
@@ -135,17 +161,12 @@ function handleSelection(info, tab) {
       \n\nTopic and text:\n${selectedText}`
             break
     }
-    //console.log(prompt);
     openWithAI(prompt)
 }
 
 async function triggerPromptHandler() {
     let storedProvider = await chrome.storage.local.get('provider')
     storedProvider = storedProvider ? storedProvider.provider : 'gemini'
-    console.log(storedProvider, aidata[storedProvider], {
-        type: 'registerprompt',
-        ...aidata[storedProvider],
-    })
     await timeout(5000)
     let tab = await createTab(aidata[storedProvider].website)
     await timeout(2000)
@@ -156,12 +177,67 @@ async function triggerPromptHandler() {
 }
 
 // Function to send a message to the website
-function sendMessageToWebsite(message) {
-    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-        if (tabs.length > 0) {
-            chrome.tabs.sendMessage(tabs[0].id, message)
+function sendMessageToWebsite(message, tabId) {
+    if (tabId) {
+        // Send the message to the specific tab
+        chrome.tabs.sendMessage(tabId, message)
+    } else {
+        // Find the active tab in the current window and send the message
+        chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+            if (tabs.length > 0) {
+                chrome.tabs.sendMessage(tabs[0].id, message)
+            }
+        })
+    }
+}
+
+// function to calculate time spent
+function trackFocusChange(tabId, startTime, AIProvider, metadata) {
+    function recordTimeSpent() {
+        const timeSpent = Date.now() - startTime
+        metadata.time_spent = timeSpent
+        metadata.AI_provider = AIProvider
+        sendMessageToWebsite(
+            {
+                type: 'ekalvia-prompt-metadata',
+                payload: {
+                    metadata,
+                },
+            },
+            webpageTabID
+        )
+    }
+
+    // Define listener functions first
+    function listener(activeInfo) {
+        if (activeInfo.tabId !== tabId) {
+            chrome.tabs.onActivated.removeListener(listener)
+            chrome.windows.onFocusChanged.removeListener(windowFocusListener)
+            recordTimeSpent()
         }
-    })
+    }
+
+    function windowFocusListener(windowId) {
+        if (windowId === chrome.windows.WINDOW_ID_NONE) {
+            chrome.tabs.onActivated.removeListener(listener)
+            chrome.windows.onFocusChanged.removeListener(windowFocusListener)
+            recordTimeSpent()
+        } else {
+            chrome.tabs.query({ active: true, windowId }, tabs => {
+                if (tabs[0].id !== tabId) {
+                    chrome.tabs.onActivated.removeListener(listener)
+                    chrome.windows.onFocusChanged.removeListener(
+                        windowFocusListener
+                    )
+                    recordTimeSpent()
+                }
+            })
+        }
+    }
+
+    // Attach event listeners
+    chrome.tabs.onActivated.addListener(listener)
+    chrome.windows.onFocusChanged.addListener(windowFocusListener)
 }
 
 // Enable bing AI on chrome
