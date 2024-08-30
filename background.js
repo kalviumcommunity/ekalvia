@@ -196,7 +196,7 @@ function trackFocusChange(tabId, startTime, AIProvider, metadata) {
     function recordTimeSpent() {
         const timeSpent = Date.now() - startTime
         metadata.time_spent = timeSpent
-        metadata.AI_provider = AIProvider
+        metadata.ai_provider = AIProvider
         sendMessageToWebsite(
             {
                 type: 'ekalvia-prompt-metadata',
