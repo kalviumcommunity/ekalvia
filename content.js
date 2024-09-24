@@ -12,11 +12,30 @@ let handler = document.addEventListener('click', e => {
     const origin = e.target.closest(`a`)
     if (origin && origin.href && origin.href.startsWith('prompt://')) {
         e.preventDefault()
-        browser.runtime.sendMessage(
-            { prompt: decodeURIComponent(origin.href.slice(9)), type: 'open' },
-            function (e) {
-                console.log('Received ', e)
+        let promptText = origin.href.slice(9)
+        function safeDecodeURIComponent(text) {
+            try {
+                return decodeURIComponent(text)
+            } catch (error) {
+                console.warn('Malformed URI component, attempting to fix:')
+
+                // Replace invalid percent sequences with a space
+                text = text.replace(/%(?![0-9a-fA-F]{2})/g, ' ')
+
+                try {
+                    return decodeURIComponent(text)
+                } catch (finalError) {
+                    console.error('Failed to decode URI after cleaning:', finalError)
+                    return text
+                }
             }
+        }
+
+        promptText = safeDecodeURIComponent(promptText)
+
+        // Send the message to browser runtime
+        browser.runtime.sendMessage(
+            { prompt: promptText, type: 'open' }
         )
     }
 })
