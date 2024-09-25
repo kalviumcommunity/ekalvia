@@ -12,14 +12,32 @@ let handler = document.addEventListener('click', e => {
     const origin = e.target.closest(`a`)
     if (origin && origin.href && origin.href.startsWith('prompt://')) {
         e.preventDefault()
+        let promptText = origin.href.slice(9)
+        
+        promptText = validateAndFixURI(promptText);
+
+        try {
+            promptText = decodeURIComponent(promptText);
+        } catch (finalError) {
+            console.error('Failed to decode URI after validation:', finalError);
+        }
+
+        // Send the message to browser runtime
         browser.runtime.sendMessage(
-            { prompt: decodeURIComponent(origin.href.slice(9)), type: 'open' },
-            function (e) {
-                console.log('Received ', e)
-            }
+            { prompt: promptText, type: 'open' }
         )
     }
 })
+
+function validateAndFixURI(text) {
+    const hasInvalidURI = /%(?![0-9a-fA-F]{2})/.test(text);
+
+    if (hasInvalidURI) {        
+        text = text.replace(/%(?![0-9a-fA-F]{2})/g, ' ');
+    }
+
+    return text;
+}
 
 function makeToast(text, toastcolor = '#f0f4f9') {
     const smileyDiv = document.createElement('div')
