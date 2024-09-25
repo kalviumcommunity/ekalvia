@@ -13,25 +13,14 @@ let handler = document.addEventListener('click', e => {
     if (origin && origin.href && origin.href.startsWith('prompt://')) {
         e.preventDefault()
         let promptText = origin.href.slice(9)
-        function safeDecodeURIComponent(text) {
-            try {
-                return decodeURIComponent(text)
-            } catch (error) {
-                console.warn('Malformed URI component, attempting to fix:')
+        
+        promptText = validateAndFixURI(promptText);
 
-                // Replace invalid percent sequences with a space
-                text = text.replace(/%(?![0-9a-fA-F]{2})/g, ' ')
-
-                try {
-                    return decodeURIComponent(text)
-                } catch (finalError) {
-                    console.error('Failed to decode URI after cleaning:', finalError)
-                    return text
-                }
-            }
+        try {
+            promptText = decodeURIComponent(promptText);
+        } catch (finalError) {
+            console.error('Failed to decode URI after validation:', finalError);
         }
-
-        promptText = safeDecodeURIComponent(promptText)
 
         // Send the message to browser runtime
         browser.runtime.sendMessage(
@@ -39,6 +28,20 @@ let handler = document.addEventListener('click', e => {
         )
     }
 })
+
+function validateAndFixURI(text) {
+    try {
+        decodeURIComponent(text);
+        return text;
+    } catch (error) {
+        console.warn('Malformed URI detected, attempting to fix:');
+
+        // Replace invalid percent sequences with a space
+        text = text.replace(/%(?![0-9a-fA-F]{2})/g, ' ')
+
+        return text;
+    }
+}
 
 function makeToast(text, toastcolor = '#f0f4f9') {
     const smileyDiv = document.createElement('div')
