@@ -30,17 +30,13 @@ let handler = document.addEventListener('click', e => {
 })
 
 function validateAndFixURI(text) {
-    try {
-        decodeURIComponent(text);
-        return text;
-    } catch (error) {
-        console.warn('Malformed URI detected, attempting to fix:');
+    const hasInvalidURI = /%(?![0-9a-fA-F]{2})/.test(text);
 
-        // Replace invalid percent sequences with a space
-        text = text.replace(/%(?![0-9a-fA-F]{2})/g, ' ')
-
-        return text;
+    if (hasInvalidURI) {        
+        text = text.replace(/%(?![0-9a-fA-F]{2})/g, ' ');
     }
+
+    return text;
 }
 
 function makeToast(text, toastcolor = '#f0f4f9') {
