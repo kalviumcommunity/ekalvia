@@ -194,9 +194,9 @@ function sendMessageToWebsite(message, tabId) {
 // function to calculate time spent
 function trackFocusChange(tabId, startTime, AIProvider, metadata) {
     function recordTimeSpent() {
-        const timeSpent = Date.now() - startTime
+        const timeSpent = (Date.now() - startTime) / 1000
         metadata.time_spent = timeSpent
-        metadata.AI_provider = AIProvider
+        metadata.ai_provider = AIProvider
         sendMessageToWebsite(
             {
                 type: 'ekalvia-prompt-metadata',
